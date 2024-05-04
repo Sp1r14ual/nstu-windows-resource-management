@@ -4,36 +4,36 @@
 #include <stdint.h>
 #include <string.h>
 
-// Производитель процессора
+// РџСЂРѕРёР·РІРѕРґРёС‚РµР»СЊ РїСЂРѕС†РµСЃСЃРѕСЂР°
 char cpu_vendor[13];
 
-// Функция для получения приоритета текущего процесса
+// Р¤СѓРЅРєС†РёСЏ РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ РїСЂРёРѕСЂРёС‚РµС‚Р° С‚РµРєСѓС‰РµРіРѕ РїСЂРѕС†РµСЃСЃР°
 extern "C" __declspec(dllexport) char* GetProcessPriority()
 {
-	//Получаем приоритет текущего процесса в целочисленном виде
+	//РџРѕР»СѓС‡Р°РµРј РїСЂРёРѕСЂРёС‚РµС‚ С‚РµРєСѓС‰РµРіРѕ РїСЂРѕС†РµСЃСЃР° РІ С†РµР»РѕС‡РёСЃР»РµРЅРЅРѕРј РІРёРґРµ
 	DWORD process_priority = GetPriorityClass(GetCurrentProcess());
 
-	//Сопоставляем целочисленную константу приоритета с текстовым описанием
+	//РЎРѕРїРѕСЃС‚Р°РІР»СЏРµРј С†РµР»РѕС‡РёСЃР»РµРЅРЅСѓСЋ РєРѕРЅСЃС‚Р°РЅС‚Сѓ РїСЂРёРѕСЂРёС‚РµС‚Р° СЃ С‚РµРєСЃС‚РѕРІС‹Рј РѕРїРёСЃР°РЅРёРµРј
 	switch(process_priority)
 	{
 		case ABOVE_NORMAL_PRIORITY_CLASS:
-			return "Выше среднего";
+			return "Р’С‹С€Рµ СЃСЂРµРґРЅРµРіРѕ";
 		case BELOW_NORMAL_PRIORITY_CLASS:
-			return "Ниже среднего";
+			return "РќРёР¶Рµ СЃСЂРµРґРЅРµРіРѕ";
 		case HIGH_PRIORITY_CLASS:
-			return "Высокий";
+			return "Р’С‹СЃРѕРєРёР№";
 		case IDLE_PRIORITY_CLASS:
-			return "Отложенный";
+			return "РћС‚Р»РѕР¶РµРЅРЅС‹Р№";
 		case NORMAL_PRIORITY_CLASS:
-			return "Обычный";
+			return "РћР±С‹С‡РЅС‹Р№";
 		case REALTIME_PRIORITY_CLASS:
-			return "Максимальный";	
+			return "РњР°РєСЃРёРјР°Р»СЊРЅС‹Р№";	
 		default:
-			return "Ошибка";	
+			return "РћС€РёР±РєР°";	
 	}
 }
 
-//Функция для вызова CPUID со значением EAX = 1
+//Р¤СѓРЅРєС†РёСЏ РґР»СЏ РІС‹Р·РѕРІР° CPUID СЃРѕ Р·РЅР°С‡РµРЅРёРµРј EAX = 1
 void mycpuid(int x[4], int leaf = 1)
 {
     int ieax, iebx, iecx, iedx;
@@ -51,10 +51,10 @@ void mycpuid(int x[4], int leaf = 1)
 	x[0] = ieax; x[1] = iebx; x[2] = iecx; x[3] = iedx;
 }
 
-//Функция для считывания производителя процессора
+//Р¤СѓРЅРєС†РёСЏ РґР»СЏ СЃС‡РёС‚С‹РІР°РЅРёСЏ РїСЂРѕРёР·РІРѕРґРёС‚РµР»СЏ РїСЂРѕС†РµСЃСЃРѕСЂР°
 void get_cpu_vendor()
 {
-	// CPUID со значением EAX = 0
+	// CPUID СЃРѕ Р·РЅР°С‡РµРЅРёРµРј EAX = 0
 	__asm
 	{
 		mov eax, 0
@@ -73,22 +73,22 @@ extern "C" __declspec(dllexport) BOOL SupportVirtualization()
 	int x[4];
 	uint32_t res;
 
-	//Функция считывания производителя процессора
+	//Р¤СѓРЅРєС†РёСЏ СЃС‡РёС‚С‹РІР°РЅРёСЏ РїСЂРѕРёР·РІРѕРґРёС‚РµР»СЏ РїСЂРѕС†РµСЃСЃРѕСЂР°
 	get_cpu_vendor();
 
-	//CPUID с параметром EAX = 1
+	//CPUID СЃ РїР°СЂР°РјРµС‚СЂРѕРј EAX = 1
 	mycpuid(x, 1);
 
-	//Сохраняем значение регистра ECX
+	//РЎРѕС…СЂР°РЅСЏРµРј Р·РЅР°С‡РµРЅРёРµ СЂРµРіРёСЃС‚СЂР° ECX
 	res = static_cast<uint32_t>(x[2]);
 
-	//Если Intel, проверяем 5 бит
+	//Р•СЃР»Рё Intel, РїСЂРѕРІРµСЂСЏРµРј 5 Р±РёС‚
 	if (strcmp(cpu_vendor, "GenuineIntel") == 0)
 		return res & 0x20;
-	//Если AMD, проверяем 2 бит
+	//Р•СЃР»Рё AMD, РїСЂРѕРІРµСЂСЏРµРј 2 Р±РёС‚
 	else if (strcmp(cpu_vendor, "AuthenticAMD") == 0)
 		return res & 0x04;
-	//Иначе не поддерживается
+	//РРЅР°С‡Рµ РЅРµ РїРѕРґРґРµСЂР¶РёРІР°РµС‚СЃСЏ
 	else 
 		return FALSE;
 } 
